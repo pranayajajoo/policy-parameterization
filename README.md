@@ -13,6 +13,8 @@ You can run this command in a virtual environment to avoid conflicts with other 
 
 ## Compute Canada
 
+Before running the below commands, make sure to change the `$user_id` in the `install_environment.sh` and `activate_environment.sh` files to your Compute Canada user id.
+
 To install the dependencies on Compute Canada, run the following command:
 ```
 bash install_environment.sh
@@ -21,7 +23,7 @@ This will install the dependencies in a virtual environment in the `~/policy_par
 
 To activate the virtual environment, run the following command:
 ```
-. activate.sh
+. activate_environment.sh
 ```
 
 # Usage
@@ -206,6 +208,28 @@ of the Linear-Gaussian Actor-Critic agent on MountainCarContinuous-v0:
 # Configuration files
 Each configuration file is a JSON file and has a few properties. There
 are also templates in each configuration directory for the files.
+
+# Plotting
+
+## Preprocessing
+
+Each run is saved as a sperate dictionary in a JSON file. To plot the data, we need to preprocess the data into a single dictionary. This can be done using the `simple_combine.py` script. The script takes in the path to the directory containing the JSON files and the path to the output file. For example:
+```
+python simple_combine.py results/Pendulum-v1_SAC_SquashedGaussian
+```
+
+It will save the combined data in the `results/Pendulum-v1_SAC_SquashedGaussian/data.json` file.
+
+## Plotting
+
+The `utils/plot_mse_data.py` script can be used to plot the data. You will need to modify the script to change the data that is plotted. Right now, it plots the average return for the best hyperparameter setting for each agent for the results stored in `results/Pendulum-v1_SAC_SquashedGaussian/data.json`. By running
+```
+python utils/plot_mse_data.py
+```
+
+it will plot the data and save the plot in the `plots/png/Pendulum-v1.png` file.
+
+This is just an example of how to plot the data. There are also other plotting scripts in the `utils/plot_utils.py` file that can be used to plot different plots.
 
 # ToDos
 
