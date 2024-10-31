@@ -14,5 +14,4 @@ export MUJOCO_PY_MUJOCO_PATH=/home/$user_id/Downloads/mujoco210
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/$user_id/Downloads/mujoco210/bin:/usr/lib/nvidia
 
 pip install --no-index --upgrade pip
-pip install -r requirements.txt
-pip install gym==0.21.0 dm_control==1.0.11 mujoco-py==2.1.2.14
+pip install -r requirements_cc.txt

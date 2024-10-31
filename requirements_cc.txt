@@ -32,3 +32,6 @@ tqdm==4.65.0+computecanada
 typing-extensions==4.6.3
 tzdata==2023.3+computecanada
 zipp==3.15.0+computecanada
+gym==0.21.0
+dm_control==1.0.11
+mujoco-py==2.1.2.14

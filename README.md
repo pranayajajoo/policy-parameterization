@@ -15,7 +15,13 @@ You can run this command in a virtual environment to avoid conflicts with other 
 
 To install the dependencies on Compute Canada, run the following command:
 ```
+bash install_environment.sh
+```
+This will install the dependencies in a virtual environment in the `~/policy_params` directory. If it does not install correctly in the first run, try to rerun the commands from the script.
 
+To activate the virtual environment, run the following command:
+```
+. activate.sh
 ```
 
 # Usage
@@ -47,7 +53,7 @@ Options:
 
 Example:
 ```
-python3 main.py --agent-json config/agent/SAC_classic_best_pendulum.json --env-json config/environment/PendulumContinuous-v1.json --index 0
+python main.py --agent-json config/agent/SAC_classic_best_pendulum.json --env-json config/environment/PendulumContinuous-v1.json --index 0
 ```
 
 # Hyperparameter settings
