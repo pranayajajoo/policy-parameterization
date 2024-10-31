@@ -1,7 +1,7 @@
 #!/bin/bash
 
-$user_id=$1
-$pi_id="def-whitem"
+user_id="jiamin"
+pi_id="def-whitem"
 
 module load python/3.9.6 mujoco
 virtualenv --no-download ~/policy_params
