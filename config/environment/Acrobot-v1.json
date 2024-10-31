@@ -1,0 +1,13 @@
+{
+    "env_name": "Acrobot-v1",
+    "platform": "gym",
+    "total_timesteps": 100000,
+    "steps_per_episode": 1000,
+    "eval_interval_timesteps": 1000000,
+    "eval_episodes": 0,
+    "gamma": 0.99,
+    "overwrite_rewards": false,
+    "continuous": true,
+    "rewards": {},
+    "start_state": []
+}

@@ -1,0 +1,13 @@
+{
+    "env_name": "Pendulum-v1",
+    "platform": "gym",
+    "total_timesteps": 50000,
+    "steps_per_episode": 200,
+    "eval_interval_timesteps": 1000000,
+    "eval_episodes": 0,
+    "gamma": 0.99,
+    "overwrite_rewards": false,
+    "continuous": true,
+    "rewards": {},
+    "start_state": []
+}

@@ -1,0 +1,35 @@
+bootstrapped
+gym==0.21.0
+cffi
+click
+cloudpickle
+contourpy
+cycler
+filelock
+fonttools
+h5py
+importlib-resources
+kiwisolver
+llvmlite
+matplotlib
+MinAtar @ git+ssh://git@github.com/kenjyoung/MinAtar@2a12fc8af0402f7473c567b2d74f7236b2551681
+numba
+numpy
+packaging
+pandas
+Pillow
+pycparser
+PyExpUtils @ git+ssh://git@github.com/andnp/PyExpUtils@2.18#egg=PyExpUtils
+PyFixedReps @ git+ssh://git@github.com/andnp/PyFixedReps@0.5#egg=PyFixedReps
+pyparsing
+python-dateutil
+pytz
+rlglue
+scipy
+seaborn
+six
+torch
+tqdm
+typing-extensions
+tzdata
+zipp
