@@ -21,10 +21,10 @@ type_map = {
         "Acrobot-v1": EPISODIC,
         }
 
-env = "Pendulum-v1"
+env = "Acrobot-v1"
 
 DATA_FILES = [
-    f"./results/{env}_SAC_SquashedGaussian/data.pkl",
+    f"results/Acrobot-v1_SAC/Acrobot-v1_SAC_SquashedGaussian/data.pkl",
 ]
 
 

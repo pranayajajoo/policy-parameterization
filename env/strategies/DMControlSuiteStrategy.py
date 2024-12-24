@@ -1,6 +1,6 @@
 from numpy import concatenate
 import os
-os.environ['MUJOCO_GL']='egl'
+os.environ['MUJOCO_GL']='osmesa'
 from dm_control import suite
 from dm_env.specs import Array
 from env.ActionSpace import ActionSpace

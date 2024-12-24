@@ -19,6 +19,219 @@ LOG_STD_MAX = 2
 LOG_STD_MIN = -5
 
 # Class definitions
+class DeterministicAction(nn.Module):
+    """
+    DeterministicAction implements a deterministic policy for epsilon-greedy exploration.
+    The network is an MLP with two shared hidden layers and an output layer for actions.
+    """
+    def __init__(self, num_inputs, num_actions, hidden_dim, activation, action_space=None, init=None):
+        """
+        Constructor
+
+        Parameters
+        ----------
+        num_inputs : int
+            The number of elements in the state feature vector
+        num_actions : int
+            The dimensionality of the action vector
+        hidden_dim : int
+            The number of units in each hidden layer of the network
+        activation : str
+            The activation function to use, one of 'relu', 'tanh'
+        action_space : gym.spaces.Space, optional
+            The action space of the environment, by default None. This argument
+            is used to ensure that the actions are within the correct scale.
+        clip_stddev : float, optional
+            The value at which the standard deviation is clipped in order to
+            prevent numerical overflow, by default 1000. If <= 0, then
+            no clipping is done.
+        init : str
+            The initialization scheme to use for the weights, one of
+            'xavier_uniform', 'xavier_normal', 'uniform', 'normal',
+            'orthogonal', by default None. If None, leaves the default
+            PyTorch initialization.
+        """
+        super(DeterministicAction, self).__init__()
+
+        self.num_actions = num_actions
+
+        # Set up the layers
+        self.linear1 = nn.Linear(num_inputs, hidden_dim)
+        self.linear2 = nn.Linear(hidden_dim, hidden_dim)
+        self.mean_linear = nn.Linear(hidden_dim, num_actions)
+
+        # Initialize weights
+        self.apply(lambda module: weights_init_(module, init, activation))
+
+        # action rescaling
+        if action_space is None:
+            self.action_scale = torch.tensor(1.)
+            self.action_bias = torch.tensor(0.)
+        else:
+            self.action_scale = torch.FloatTensor(
+                (action_space.high - action_space.low) / 2.)
+            self.action_bias = torch.FloatTensor(
+                (action_space.high + action_space.low) / 2.)
+
+        if activation == "relu":
+            self.act = F.relu
+        elif activation == "tanh":
+            self.act = torch.tanh
+        else:
+            raise ValueError(f"unknown activation function {activation}")
+
+    def forward(self, state):
+        """
+        Performs the forward pass through the network, predicting the mean
+        and the log standard deviation.
+
+        Parameters
+        ----------
+        state : torch.Tensor of float
+             The input state to predict the policy in
+
+        Returns
+        -------
+        2-tuple of torch.Tensor of float
+            Predicted action means for the input state.
+        """
+        x = self.act(self.linear1(state))
+        x = self.act(self.linear2(x))
+
+        mean = self.mean_linear(x)
+        
+        return mean
+
+    def get_action(self, state, num_samples = 1):
+        """
+        Get deterministic action for a given state.
+        Applies the tanh squashing function and rescales the action to the environment's action space.
+        Parameters
+        ----------
+        state : torch.Tensor
+            Input state to the network.
+        Returns
+        -------
+        torch.Tensor
+            Deterministic action within the environment's action space.
+        """
+        mean = self.forward(state)
+        ### TODO check if we need action_scale and action_bias
+        # mean = torch.tanh(mean) * self.action_scale + self.action_bias
+        mean = torch.tanh(mean)
+        return mean
+
+    def eval_sample(self, state):
+        with torch.no_grad():
+            return self.get_action(state)
+
+    def to(self, device):
+        """
+        Moves the network to a device
+
+        Parameters
+        ----------
+        device : torch.device
+            The device to move the network to
+
+        Returns
+        -------
+        nn.Module
+            The current network, moved to a new device
+        """
+        self.action_scale = self.action_scale.to(device)
+        self.action_bias = self.action_bias.to(device)
+        return super(DeterministicAction, self).to(device)
+
+from scipy.optimize import minimize
+class ScipyOptimizer:
+    """
+    Optimizer that, given a (Double) Critic, finds the action that maximizes Q(state, action).
+    Because scipy can only minimize, we minimize the negative Q-value.
+    """
+    def __init__(self, critic, device):
+        """
+        Parameters
+        ----------
+        critic : nn.Module
+            A DoubleQ critic that returns (Q1, Q2).
+        device : torch.device
+            Torch device (cpu/gpu).
+        """
+        self.critic = critic
+        self.device = device
+        self.last_best_actions = {}  
+        # Dictionary: state_key -> np.array(action_dim,)
+        # e.g. { (0.12, 0.98): np.array([0.55]), ... }
+
+    def _state_to_key(self, state_np):
+        """
+        Convert state numpy array to a hashable key (tuple of floats).
+        For multi-dimensional states, this will be a tuple with multiple elements.
+        """
+        return tuple(np.round(state_np, 5))  # or any rounding you prefer
+
+    def objective_minimize(self, state_tensor, action):
+        """
+        Objective to minimize = - min(Q1, Q2).
+        So effectively we are maximizing min(Q1, Q2).
+        """
+        action_tensor = torch.tensor(action, dtype=torch.float32, device=self.device).unsqueeze(0)
+        # shape: [1, action_dim]
+
+        with torch.no_grad():
+            q1, q2 = self.critic(state_tensor, action_tensor)
+            q_min = torch.min(q1, q2).item()
+        return -q_min  # Minimizing -q_min => maximizing q_min
+
+    def minimize_single(self, state_np, num_guesses=2):
+        """
+        Minimizes the negative Q for a single (1D or multi-D) state.
+        Uses two guesses: (1) the last best action (if any) for this state, (2) a new random guess.
+        Returns the best action found.
+        """
+        # Convert state to PyTorch
+        state_tensor = torch.tensor(state_np, dtype=torch.float32, device=self.device).unsqueeze(0)
+        # shape: [1, state_dim]
+
+        action_dim = self.critic.action_dim  # set in the agent
+        bounds = [(-1, 1)] * action_dim       # Assume action in [-1,1]^action_dim
+
+        # Build guesses
+        guesses = []
+        
+        # 1) If we have a stored best action for this state, use it
+        state_key = self._state_to_key(state_np)
+        if state_key in self.last_best_actions:
+            guesses.append(self.last_best_actions[state_key])
+        else:
+            # If no stored guess yet, add a random guess
+            guesses.append(np.random.uniform(-1, 1, size=(action_dim,)))
+
+        # 2) Always add one new random guess
+        guesses.append(np.random.uniform(-1, 1, size=(action_dim,)))
+
+        best_action = None
+        best_val = float('inf')
+
+        # Evaluate each guess with trust-constr
+        for guess in guesses:
+            res = minimize(
+                lambda act: self.objective_minimize(state_tensor, act),
+                guess,
+                method='trust-constr',
+                jac='2-point',
+                bounds=bounds
+            )
+            if res.fun < best_val:
+                best_val = res.fun
+                best_action = res.x
+
+        # Store the best action for next time
+        self.last_best_actions[state_key] = best_action
+
+        return best_action  # np.array(shape=(action_dim,))
+
 class SquashedGaussian(nn.Module):
     """
     Class SquashedGaussian implements a policy following a squashed

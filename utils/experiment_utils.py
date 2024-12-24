@@ -124,6 +124,116 @@ def create_agent(agent, config):
             n_states_logged=config.get("n_states_logged", 1),
             state_path=config.get("state_path", None),
         )
+    
+    ### PJ: Epsgreedy ###
+    if agent.lower() == "epsgreedy".lower():
+        from agent.nonlinear.epsgreedy import EpsGreedyAgent as epsgreedy
+        return epsgreedy(
+            clip_actions=config["clip_actions"],
+            baseline_actions=config["reparam_baseline"][1],
+            reparameterized=config["reparam_baseline"][0],
+            gamma=config["gamma"],
+            tau=config["tau"],
+            policy=config["policy_type"],
+            target_update_interval=config["target_update_interval"],
+            critic_lr=config["critic_lr"],
+            actor_lr_scale=config["actor_lr_scale"],
+            actor_hidden_dim=config["hidden_dim"],
+            critic_hidden_dim=config["hidden_dim"],
+            replay_capacity=config["replay_capacity"],
+            seed=config["seed"],
+            batch_size=config["batch_size"],
+            cuda=config["cuda"],
+            # clip_min=config.get("clip_min", 1e-6),
+            # clip_max=config.get("clip_max", 1e6),
+            # num_components=config.get("num_components", 1),
+            # share_std=config.get("share_std", False),
+            # temperature=config.get("temperature", 0.1),
+            # hard=config.get("hard", False),
+            # impl=config.get("impl", "default"),
+            # eps=config.get("eps", 1e-20),
+            # latent_dim=config.get("latent_dim", 2),
+            # lmbda=config.get("lmbda", -1),
+            # eta=config.get("eta", 1.0),
+            # repulsive_coef=config.get("repulsive_coef", 0.0),
+            init=config["weight_init"],
+            activation=config.get("activation", "relu"),
+            env=config["env"],
+            # double_q=config["double_q"],
+            # num_samples=config["num_samples"],
+            uniform_exploration_steps=config["uniform_exploration_steps"],
+            steps_before_learning=config["steps_before_learning"],
+            # use_true_q=config.get("use_true_q", False),
+            # log_actions_every=config.get("log_actions_every", 10000000),
+            # n_actions_logged=config.get("n_actions_logged", 1000),
+            # record_current_state=config.get("record_current_state", False),
+            # record_grad_norm=config.get("record_grad_norm", False),
+            # record_entropy=config.get("record_entropy", False),
+            # record_params=config.get("record_params", False),
+            # record_values=config.get("record_values", False),
+            # record_mixture_stat=config.get("record_mixture_stat", False),
+            # record_eval_state=config.get("record_eval_state", None),
+            # n_states_logged=config.get("n_states_logged", 1),
+            # state_path=config.get("state_path", None),
+            ### PJ: adding epsilon hyperparam for epsgreedy method
+            epsilon=config["epsilon"],
+            epsilon_decay=config["epsilon_decay"]
+        )
+    
+        ### PJ: Epsgreedy SCIPY MINIMIZER ###
+    if agent.lower() == "epsgreedy_optimizer".lower():
+        from agent.nonlinear.epsgreedy_optimizer import EpsGreedyAgent as epsgreedy
+        return epsgreedy(
+            clip_actions=config["clip_actions"],
+            baseline_actions=config["reparam_baseline"][1],
+            reparameterized=config["reparam_baseline"][0],
+            gamma=config["gamma"],
+            tau=config["tau"],
+            policy=config["policy_type"],
+            target_update_interval=config["target_update_interval"],
+            critic_lr=config["critic_lr"],
+            actor_lr_scale=config["actor_lr_scale"],
+            actor_hidden_dim=config["hidden_dim"],
+            critic_hidden_dim=config["hidden_dim"],
+            replay_capacity=config["replay_capacity"],
+            seed=config["seed"],
+            batch_size=config["batch_size"],
+            cuda=config["cuda"],
+            # clip_min=config.get("clip_min", 1e-6),
+            # clip_max=config.get("clip_max", 1e6),
+            # num_components=config.get("num_components", 1),
+            # share_std=config.get("share_std", False),
+            # temperature=config.get("temperature", 0.1),
+            # hard=config.get("hard", False),
+            # impl=config.get("impl", "default"),
+            # eps=config.get("eps", 1e-20),
+            # latent_dim=config.get("latent_dim", 2),
+            # lmbda=config.get("lmbda", -1),
+            # eta=config.get("eta", 1.0),
+            # repulsive_coef=config.get("repulsive_coef", 0.0),
+            init=config["weight_init"],
+            activation=config.get("activation", "relu"),
+            env=config["env"],
+            # double_q=config["double_q"],
+            # num_samples=config["num_samples"],
+            uniform_exploration_steps=config["uniform_exploration_steps"],
+            steps_before_learning=config["steps_before_learning"],
+            # use_true_q=config.get("use_true_q", False),
+            # log_actions_every=config.get("log_actions_every", 10000000),
+            # n_actions_logged=config.get("n_actions_logged", 1000),
+            # record_current_state=config.get("record_current_state", False),
+            # record_grad_norm=config.get("record_grad_norm", False),
+            # record_entropy=config.get("record_entropy", False),
+            # record_params=config.get("record_params", False),
+            # record_values=config.get("record_values", False),
+            # record_mixture_stat=config.get("record_mixture_stat", False),
+            # record_eval_state=config.get("record_eval_state", None),
+            # n_states_logged=config.get("n_states_logged", 1),
+            # state_path=config.get("state_path", None),
+            ### PJ: adding epsilon hyperparam for epsgreedy method
+            epsilon=config["epsilon"],
+            epsilon_decay=config["epsilon_decay"]
+        )
 
     # GreedyAC double ρ
     if agent.lower() == "GreedyACNoEntReg".lower():
@@ -1319,4 +1429,3 @@ def combine_data_dictionaries_by_dir(dir):
     files = glob(os.path.join(dir, "*.pkl"))
 
     combine_data_dictionaries(files)
-

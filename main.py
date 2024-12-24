@@ -11,7 +11,7 @@ import json
 from copy import deepcopy
 import os
 import utils.hypers as hypers
-import socket
+# import socket
 from env.strategies.GymStrategy import GymStrategy
 from env.strategies.GymStrategy import GymEnvFactory
 from env.strategies.DMControlSuiteStrategy import DMControlSuiteStrategy
@@ -87,6 +87,8 @@ def run(env_json, agent_json, index, monitor, after, save_dir, rerun):
         env_config = json.load(in_json)
     with open(agent_json) as in_json:
         agent_config = json.load(in_json)
+    
+    # import ipdb;ipdb.set_trace()
 
     main(agent_config, env_config, index, monitor, after, save_dir, rerun)
 
@@ -128,6 +130,9 @@ def main(agent_config, env_config, index, monitor, after,
 
     # Experiment runs per each hyperparameter
     data["experiment_data"] = {}
+    
+    # print("Reached here"run
+    
 
     # Calculate the number of timesteps before rendering. It is inputted as
     # number of training steps, but the environment uses training + eval steps
@@ -139,7 +144,7 @@ def main(agent_config, env_config, index, monitor, after,
         print(f"Evaluation intervals before monitor: {eval_intervals}")
 
     # Get the directory to save in
-    host = socket.gethostname()
+    # host = socket.gethostname()
     if not save_dir.startswith("./results"):
         save_dir = os.path.join("./results", save_dir)
 
@@ -166,6 +171,9 @@ def main(agent_config, env_config, index, monitor, after,
     RANDOM_SEED = np.iinfo(np.int16).max - RUN_NUM
     if rerun:
         RANDOM_SEED = RANDOM_SEED - np.iinfo(np.int16).max // 2
+
+    ### PJ TEST
+    # RANDOM_SEED = 32765
 
     # Configure the environment
     env_config["seed"] = RANDOM_SEED
@@ -234,6 +242,7 @@ def main(agent_config, env_config, index, monitor, after,
     # Create the agent
     print(agent_config["agent_name"])
     agent_run_params["env"] = env
+    # import ipdb;ipdb.set_trace()
     agent = exp_utils.create_agent(agent_config["agent_name"],
                                    agent_run_params)
 
@@ -257,6 +266,8 @@ def main(agent_config, env_config, index, monitor, after,
         "agent_config": agent_config,
         "index": index,
     }
+    # print("Reached here")
+    # import ipdb;ipdb.set_trace()
     exp.run()
 
     # Save the agent's learned parameters, with these parameters and the

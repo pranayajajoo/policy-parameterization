@@ -1,8 +1,10 @@
 {
     "account": "rrg-whitem",
-    "time": "3:00:00",
+    "time": "0:30:00",
     "nodes": 1,
     "cores": 20,
     "sequential": 3,
-    "memPerCpu": "4Gb"
+    "memPerCpu": "4Gb",
+    "output": "/home/pranayaj/scratch/slurm_trash/%x-%j.out",
+    "error": "/home/pranayaj/scratch/slurm_trash/%x-%j.out"
 }

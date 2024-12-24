@@ -4,5 +4,7 @@
     "nodes": 1,
     "cores": 4,
     "sequential": 1,
-    "memPerCpu": "4Gb"
+    "memPerCpu": "4Gb",
+    "output": "/home/pranayaj/scratch/slurm_trash/%x-%j.out",
+    "error": "/home/pranayaj/scratch/slurm_trash/%x-%j.out"
 }

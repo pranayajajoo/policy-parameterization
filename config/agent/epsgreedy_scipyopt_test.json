@@ -1,0 +1,25 @@
+{
+    "agent_name": "epsgreedy_optimizer",
+    "parameters":
+    {
+        "clip_actions": [true],
+        "replay_capacity": [200000],
+        "reparam_baseline": [[true, 0]],
+        "num_samples": [1],
+        "double_q": [true],
+        "batch_size": [32],
+        "tau": [0.01],
+        "policy_type": ["ScipyOptimizer"], 
+        "target_update_interval": [1],
+        "critic_lr": [ 1e-3],
+        "actor_lr_scale": [1],
+        "hidden_dim": [64],
+        "weight_init": ["xavier_uniform"],
+        "uniform_exploration_steps": [0],
+        "steps_before_learning": [1000],
+        "cuda": [false],
+        "epsilon": [0.05],
+        "epsilon_decay": [0.995],
+        "epsilon_min": [0.1]
+    }
+}

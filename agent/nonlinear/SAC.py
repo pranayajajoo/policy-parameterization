@@ -441,7 +441,8 @@ class SAC(BaseAgent):
         """
         # Keep transition in replay buffer
         self._replay.push(state, action, reward, next_state, done_mask)
-
+        # if self._t==2000:
+            # import ipdb;ipdb.set_trace()
         if self._t < self._steps_before_learning:
             return
 
@@ -451,7 +452,7 @@ class SAC(BaseAgent):
 
         if state_batch is None:
             return
-
+        # import ipdb;ipdb.set_trace()
         if not self.use_true_q:
             self._update_critic(state_batch, action_batch, reward_batch,
                                 next_state_batch, mask_batch)
@@ -610,7 +611,8 @@ class SAC(BaseAgent):
             policy_loss = (mix_loss + comp_loss).mean()
 
         elif self._reparameterized:
-            # Reparameterization trick
+            # import ipdb;ipdb.set_trace()
+            # Reparameterization trick [Official loss]
             if self._baseline_actions > 0:
                 pi, log_pi = self._policy.rsample(
                     state_batch,
@@ -638,7 +640,7 @@ class SAC(BaseAgent):
                 q = self._get_q(state_batch, pi)
 
             policy_loss = ((self._alpha * log_pi) - q).mean()
-
+            # print("Policy loss: {}".format(policy_loss.mean()))
             if hasattr(self._policy, "repulsive_loss") and \
                     self._policy.repulsive_coef > 0:
                 # Compute the repulsive loss
@@ -1037,7 +1039,7 @@ class SAC(BaseAgent):
         # Calculate the losses on each critic
         # JQ = 𝔼(st,at)~D[0.5(Q1(st,at) - r(st,at) - γ(𝔼st+1~p[V(st+1)]))^2]
         q1_loss = F.mse_loss(q1, q_target)
-
+        # print("Q mean: {}".format(q1.mean()))
         # JQ = 𝔼(st,at)~D[0.5(Q1(st,at) - r(st,at) - γ(𝔼st+1~p[V(st+1)]))^2]
         q2_loss = F.mse_loss(q2, q_target)
         q_loss = q1_loss + q2_loss

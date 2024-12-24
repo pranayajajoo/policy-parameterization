@@ -123,6 +123,9 @@ python schedule.py --runs $NUM_RUNS clusters/CLUSTER_FILE main.py ./ $ENV_CONFIG
 For example, you can sweep over the hyperparameters for the SAC agent on the Pendulum environment with the following command:
 ```
 python schedule.py --runs 10 clusters/cedar.json main.py ./ config/environment/PendulumContinuous-v1.json classic_sweep config/agent/SAC_classic_sweep.json
+
+
+python schedule.py --runs 10 clusters/cedar.json main.py ./ config/environment/Acrobot-v1.json classic_sweep config/agent/SAC_classic_sweep.json
 ```
 
 The results will be saved in the `results/classic_sweep` directory.

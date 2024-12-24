@@ -1,6 +1,6 @@
 #!/bin/bash
 
-user_id="jiamin"
+user_id="pranayaj"
 
 module load StdEnv/2020
 module load python/3.9.6 mujoco
