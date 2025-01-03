@@ -115,17 +115,22 @@ class EpsGreedyAgent(BaseAgent):
         return action.detach().cpu().numpy()[0]  # size (1, action_dims)
     
     ### TODO
-    def batch_sample_action(self, state):
+    def batch_sample_action(self, states):
         """Select action using epsilon-greedy policy."""
         
         ### TODO: check if we want to do some random exploration before beginning eps greedy
-        state_tensor = torch.FloatTensor(state).to(self.device).unsqueeze(0)
+        # states should already be a tensor
+        states_tensor = torch.FloatTensor(states).to(self.device).unsqueeze(0)
+        # states_tensor = torch.FloatTensor(state).to(self.device).unsqueeze(0)
         if self._is_training:
             self._t += 1
         if self._is_training and np.random.rand() < self.epsilon:
-            action = torch.Tensor(self.env.action_space.sample())  # Random action
+            batch_size = states_tensor.size(0)
+            action = torch.FloatTensor([
+            self.env.action_space.sample() for _ in range(batch_size)
+        ]).to(self.device)  # Random action
         else:
-            action = torch.Tensor(self.actor.get_action(state = state_tensor))  # Exploit
+            action = torch.Tensor(self.actor.get_action(state = states_tensor))  # Exploit
         # print(f'sample action working: {action}')
         return action.detach().cpu().numpy()[0]  # size (1, action_dims)
 
@@ -176,7 +181,7 @@ class EpsGreedyAgent(BaseAgent):
             # next_actions = self.actor.get_action(next_states)
 
             # TESTING CRITIC EXPLLORATION + EXPLOITATION
-            next_actions = self.sample_action(next_states)
+            next_actions = self.batch_sample_action(next_states)
 
             # Compute target Q-values using target critic
             q1_next, q2_next = self.target_critic(next_states, next_actions)
