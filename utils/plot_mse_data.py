@@ -24,7 +24,7 @@ type_map = {
 env = "Acrobot-v1"
 
 DATA_FILES = [
-    f"results/Acrobot-v1_SAC/Acrobot-v1_SAC_SquashedGaussian/data.pkl",
+    f"results/results/td3/Acrobot-v1_epsgreedy_DeterministicAction/Acrobot-v1_epsgreedy_data_0.pkl",
 ]
 
 
@@ -79,5 +79,5 @@ ax.legend()
 # create directory if it doesn't exist
 if not os.path.exists("./plots/png"):
     os.makedirs("./plots/png")
-fig.savefig(f"./plots/png/{env}.png", bbox_inches="tight")
-print(f"Saved to ./plots/png/{env}.png")
+fig.savefig(f"./plots/png/Acrobot-v1_epsgreedy_data_0_usingtd3_exploration.png", bbox_inches="tight")
+print(f"Saved to ./plots/png/Acrobot-v1_epsgreedy_data_0_usingtd3_exploration.png")

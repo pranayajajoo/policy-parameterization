@@ -172,9 +172,6 @@ def main(agent_config, env_config, index, monitor, after,
     if rerun:
         RANDOM_SEED = RANDOM_SEED - np.iinfo(np.int16).max // 2
 
-    ### PJ TEST
-    # RANDOM_SEED = 32765
-
     # Configure the environment
     env_config["seed"] = RANDOM_SEED
     if agent_config["agent_name"] == "linearAC" or \
@@ -189,9 +186,11 @@ def main(agent_config, env_config, index, monitor, after,
     if env_config.get("platform", "gym") == "dmcontrol":
         strategy = DMControlSuiteStrategy()
         factory = DMControlSuiteEnvFactory()
+        print(f'\n\n\nits dm control\n\n\n')
     else:
         strategy = GymStrategy()
         factory = GymEnvFactory()
+        print(f'\n\n\nits gym\n\n\n')
 
     # Create the environment
     env = environment.Environment(env_config, RANDOM_SEED, strategy, factory, monitor, after)

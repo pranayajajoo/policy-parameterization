@@ -220,6 +220,9 @@ class Experiment:
 
         self.train_episodes += 1
 
+        # Reset q1 means for the current episode
+        self.agent.q1_mean_per_episode = []
+
         # Track the sequences of states, rewards, and actions during training
         # episode_states = []
         episode_rewards = []
@@ -230,7 +233,6 @@ class Experiment:
         episode_steps = 0
 
         state, _ = self.env.reset()
-
         done = False
         action = self.agent.sample_action(state)
 
@@ -292,6 +294,13 @@ class Experiment:
                 break
 
         end = time.time()
+
+        # Store q1.mean() values for the episode
+        # if "q1_means" not in self.info:
+        #     self.info["q1_means"] = []
+        # self.info["q1_means"].append(self.agent.get_q1_means())
+
+        return episode_return, episode_steps, (end - start)
 
         return episode_return, episode_steps, (end-start)
 
