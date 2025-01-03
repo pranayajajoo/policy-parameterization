@@ -114,32 +114,32 @@ class EpsGreedyAgent(BaseAgent):
         state_tensor = torch.FloatTensor(state).to(self.device).unsqueeze(0)
         if self._is_training:
             self._t += 1
-        # if self._is_training and np.random.rand() < self.epsilon:
-        #     action = torch.Tensor(self.env.action_space.sample())  # Random action
-        # else:
-            # action = torch.Tensor(self.actor.get_action(state = state_tensor))  # Exploit
+        if self._is_training and np.random.rand() < self.epsilon:
+            action = torch.Tensor(self.env.action_space.sample())  # Random action
+        else:
+            action = torch.Tensor(self.actor.get_action(state = state_tensor))  # Exploit
             
-        # TD3
-        action_tensor = self.actor.get_action(state=state_tensor).detach().numpy()
-        action = (
-                    torch.Tensor(action_tensor) 
-                    +
-                    np.random.normal(0, 
-                                     self.max_action * 0.1,
-                                     size=self.env.action_space.shape  # Match the expected output shape
-                                    )
-                ).clip(-self.max_action, self.max_action)
+        # TD3 testing - if we want to use TD3, uncomment the below
+        # action_tensor = self.actor.get_action(state=state_tensor).detach().numpy()
+        # action = (
+        #             torch.Tensor(action_tensor) 
+        #             +
+        #             np.random.normal(0, 
+        #                              self.max_action * 0.1,
+        #                              size=self.env.action_space.shape  # Match the expected output shape
+        #                             )
+        #         ).clip(-self.max_action, self.max_action)
 
         return action.detach().cpu().numpy()[0]  # size (1, action_dims)
     
-    ### TODO
+    ### this function is used in critic update. normally, the next action in critic update is 
+    # greedy/explotative. using this will make it epsilon greedy
     def batch_sample_action(self, states):
         """Select action using epsilon-greedy policy."""
         
         ### TODO: check if we want to do some random exploration before beginning eps greedy
         # states should already be a tensor
         states_tensor = torch.FloatTensor(states).to(self.device).unsqueeze(0)
-        # states_tensor = torch.FloatTensor(state).to(self.device).unsqueeze(0)
         if self._is_training:
             self._t += 1
         if self._is_training:
@@ -165,19 +165,9 @@ class EpsGreedyAgent(BaseAgent):
 
         states, actions, rewards, next_states, dones = self.replay_buffer.sample(self.batch_size)
 
-
-        # import ipdb; ipdb.set_trace()
-
+        # for before we have the batch_size number of states in the replay buffer
         if states is None:
-            # print('reached here')
             return
-        # if states is not None:
-        #     import ipdb; ipdb.set_trace()
-
-        # import ipdb; ipdb.set_trace()
-
-
-        ### TODO: create update functions for actor and critic to monitor the # of pupdates for actor and critic
 
         # Update critic
         self.update_critic(states, actions, rewards, next_states, dones)
@@ -202,7 +192,7 @@ class EpsGreedyAgent(BaseAgent):
     #     uniform_actions = [np.linspace(action_min, action_max, num_starting_points)]
     #     actions = torch.FloatTensor(uniform_actions)
         
-    #     # create an optimizer
+    #     # creating an optimizer
     #     optim = SGD(actions.parameters(), lr=lr)
     #     for i in range(num_gd_steps):
     #         optim.zero_grad()
@@ -219,20 +209,14 @@ class EpsGreedyAgent(BaseAgent):
             # Compute next actions using the actor
             next_actions = self.actor.get_action(next_states)
 
-            # TESTING CRITIC EXPLLORATION + EXPLOITATION
+            # TESTING CRITIC EXPLORATION + EXPLOITATION
             # next_actions = self.batch_sample_action(next_states)
-
-            # import ipdb;ipdb.set_trace()
 
             # Compute target Q-values using target critic
             q1_next, q2_next = self.target_critic(next_states, next_actions)
 
-            # TODO check dim of rewards, dones, q1_next should be same
+            # TODO check dim of rewards, dones, q1_next should be same - yes it should be and it is
             q_target = rewards + (1 - dones) * self.gamma * torch.min(q1_next, q2_next)
-            # print(f'rewards dims: {rewards.size()}')
-            # print(f'dones dims: {dones.size()}')
-            # print(f'q1_next dims: {q1_next.size()}')
-            # print(f'q_target dims: {q_target.size()}')
 
         # Compute current Q-values using the critic
         q1, q2 = self.critic(states, actions)
@@ -240,7 +224,6 @@ class EpsGreedyAgent(BaseAgent):
         # storing q1 values for plotting and debugging
         q1_mean = q1.mean().item()
         self.q1_mean_per_episode.append(q1_mean)
-        # print(f"[update_critic] Average q1: {q1.mean().item()}")
 
         # Compute critic loss
         critic_loss = F.mse_loss(q1, q_target) + F.mse_loss(q2, q_target)
@@ -251,6 +234,7 @@ class EpsGreedyAgent(BaseAgent):
         self.critic_optimizer.step()
     
     def get_q1_means(self):
+        # for testing and verification purposes
         return self.q1_mean_per_episode
     
 
@@ -264,7 +248,6 @@ class EpsGreedyAgent(BaseAgent):
         # Evaluate the Q-values of the predicted actions
         q1, q2 = self.critic(states, actions)
         q_min = torch.min(q1, q2)  # Conservative Q-value estimate
-        # print(f"[update_actor] q_min: {q_min}")
 
         # Compute the actor loss (negative Q-value to maximize it)
         actor_loss = -q_min.mean()
