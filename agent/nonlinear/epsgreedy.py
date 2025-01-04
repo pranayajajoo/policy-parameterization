@@ -187,19 +187,39 @@ class EpsGreedyAgent(BaseAgent):
         """
         nn_utils.soft_update(self.target_critic, self.critic, self.tau)
 
+    ### TODO: WIP
     # Jiamin's optimizer suggestion
-    # def get_potential_actions(self, states, q, action_min=-1, action_max=1, num_starting_points=30, lr=0.01, num_gd_steps=100):
-    #     uniform_actions = [np.linspace(action_min, action_max, num_starting_points)]
-    #     actions = torch.FloatTensor(uniform_actions)
-        
-    #     # creating an optimizer
-    #     optim = SGD(actions.parameters(), lr=lr)
-    #     for i in range(num_gd_steps):
-    #         optim.zero_grad()
-    #         loss = - q(s, actions)
-    #         loss.backward()
-    #         optim.step()
-    #     return actions
+    def get_potential_actions(self, states, q, action_min=-1, action_max=1, num_starting_points=30, lr=0.01, num_gd_steps=100):
+        # initialize actions with equidistant start points
+        uniform_actions = [np.linspace(action_min, action_max, num_starting_points)]
+        actions = torch.FloatTensor(uniform_actions)
+        actions.requires_grad = True
+
+        # SGD optimizer
+        optimizer = torch.optim.SGD([actions], lr=lr)
+        loss_SGD = []
+
+        # gradient descent
+        # check if we want to do fixed number of steps or to a thershold loss
+        for step in range(num_gd_steps):
+            optimizer.zero_grad()
+
+            # Compute Q-values for current actions
+            q_values = q(states, actions)
+
+            # Negative Q-value as loss (maximize Q-value)
+            loss = -q_values.mean()
+            loss.backward()
+            loss_SGD.append(loss)
+
+            # Gradient descent step
+            optimizer.step()
+
+            # Clip actions to be within the valid range
+            with torch.no_grad():
+                actions.clamp_(action_min, action_max)
+
+        return actions.detach()
 
     def update_critic(self, states, actions, rewards, next_states, dones):
         """
