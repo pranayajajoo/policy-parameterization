@@ -233,6 +233,8 @@ class Experiment:
         episode_steps = 0
 
         state, _ = self.env.reset()
+        # print('inexperiment')
+        # import ipdb; ipdb.set_trace()
         done = False
         action = self.agent.sample_action(state)
 
@@ -257,6 +259,7 @@ class Experiment:
             # Compute the done mask, which is 1 if the episode terminated
             # without the goal being reached or the episode is incomplete,
             # and 0 if the agent reached the goal or terminal state
+            # import ipdb;ipdb.set_trace()
             if self.env.steps_per_episode <= 1:
                 done_mask = 0
             else:
@@ -302,7 +305,7 @@ class Experiment:
 
         return episode_return, episode_steps, (end - start)
 
-        return episode_return, episode_steps, (end-start)
+        # return episode_return, episode_steps, (end-start)
 
     def eval(self):
         """

@@ -1,0 +1,1 @@
+sbatch seuss_sbatch_0.sh

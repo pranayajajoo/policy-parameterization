@@ -190,7 +190,6 @@ def main(agent_config, env_config, index, monitor, after,
     else:
         strategy = GymStrategy()
         factory = GymEnvFactory()
-        print(f'\n\n\nits gym\n\n\n')
 
     # Create the environment
     env = environment.Environment(env_config, RANDOM_SEED, strategy, factory, monitor, after)

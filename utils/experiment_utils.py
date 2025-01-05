@@ -177,12 +177,13 @@ def create_agent(agent, config):
             # state_path=config.get("state_path", None),
             ### PJ: adding epsilon hyperparam for epsgreedy method
             epsilon=config["epsilon"],
-            epsilon_decay=config["epsilon_decay"]
+            epsilon_decay=config["epsilon_decay"],
+            epsilon_min=config["epsilon_min"]
         )
     
         ### PJ: Epsgreedy SCIPY MINIMIZER ###
     if agent.lower() == "epsgreedy_optimizer".lower():
-        from agent.nonlinear.epsgreedy_optimizer import EpsGreedyAgent as epsgreedy
+        from agent.nonlinear.epsgreedy_scipyoptimizer import EpsGreedyAgent as epsgreedy
         return epsgreedy(
             clip_actions=config["clip_actions"],
             baseline_actions=config["reparam_baseline"][1],

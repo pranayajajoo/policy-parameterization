@@ -42,7 +42,6 @@ class EpsGreedyAgent(BaseAgent):
 
         # tracking q values every episode
         self.q1_mean_per_episode = []
-        self._uniform_exploration_steps = uniform_exploration_steps
 
         self.env = env
         self.gamma = gamma
@@ -112,57 +111,20 @@ class EpsGreedyAgent(BaseAgent):
         """Select action using epsilon-greedy policy."""
         
         ### TODO: check if we want to do some random exploration before beginning eps greedy
-        state_tensor = torch.FloatTensor(state.reshape(1, -1)).to(self.device)
+        state_tensor = torch.FloatTensor(state).to(self.device).unsqueeze(0)
         if self._is_training:
             self._t += 1
-            if self._t - 1 < self._uniform_exploration_steps:
-                action = torch.Tensor(self.env.action_space.sample())
-                return action.detach().cpu().numpy().reshape(1,-1)
         if self._is_training and np.random.rand() < self.epsilon:
             action = torch.Tensor(self.env.action_space.sample())  # Random action
         else:
-            action = torch.Tensor(self.actor.get_action(state = state_tensor))  # Exploit
-            
-        # # TD3 testing - if we want to use TD3, uncomment the below
-        # action_tensor = self.actor.get_action(state=state_tensor).detach().cpu().numpy()
-        # action = (
-        #             torch.Tensor(action_tensor) 
-        #             +
-        #             np.random.normal(0, 
-        #                              self.max_action * 0.1,
-        #                              size=self.env.action_space.shape  # Match the expected output shape
-        #                             )
-        #         ).clip(-self.max_action, self.max_action)
+            action = torch.Tensor(self.get_potential_actions(states = state_tensor))  # Exploit
 
-        return action.detach().cpu().numpy().reshape(-1)  # size (1, action_dims)
-    
-    ### this function is used in critic update. normally, the next action in critic update is 
-    # greedy/explotative. using this will make it epsilon greedy
-    def batch_sample_action(self, states):
-        """Select action using epsilon-greedy policy."""
-        
-        ### TODO: check if we want to do some random exploration before beginning eps greedy
-        # states should already be a tensor
-        states_tensor = torch.FloatTensor(states).to(self.device).unsqueeze(0)
-        if self._is_training:
-            self._t += 1
-        if self._is_training:
-            batch_size = states_tensor.size(1)
-            random_action = torch.FloatTensor([
-            self.env.action_space.sample() for _ in range(batch_size)
-            ]).to(self.device) # random action
-            greedy_action = torch.Tensor(self.actor.get_action(state = states_tensor))
-            random_idx = np.random.uniform(size=(batch_size,))
-            action = (random_idx<self.epsilon)*random_action + (random_idx>=self.epsilon)*greedy_action
-
-        return action.squeeze(0).detach().cpu()  # size (1, action_dims)
-
+        return action.detach().cpu().numpy()[0]  # size (1, action_dims)
 
     def update(self, state, action, reward, next_state, done):
         """Add experience to replay buffer and update networks."""
         action_array = np.array([action]) if np.isscalar(action) else action
-
-        self.replay_buffer.push(state.reshape(1,-1), action_array, reward, next_state.reshape(1,-1), done)
+        self.replay_buffer.push(state, action_array, reward, next_state, done)
 
         ### TODO: ADD IF WE're DOING EXPLORATION BEFORE TRAINING STARTS
         # if self._t < self._steps_before_learning:
@@ -194,7 +156,7 @@ class EpsGreedyAgent(BaseAgent):
 
     ### TODO: WIP
     # Jiamin's optimizer suggestion
-    def get_potential_actions(self, states, q, action_min=-1, action_max=1, num_starting_points=30, lr=0.01, num_gd_steps=100): 
+    def get_potential_actions(self, states, action_min=-1, action_max=1, num_starting_points=30, lr=0.01, num_gd_steps=100):
         # initialize actions with equidistant start points
         uniform_actions = [np.linspace(action_min, action_max, num_starting_points)]
         actions = torch.FloatTensor(uniform_actions)
@@ -241,7 +203,7 @@ class EpsGreedyAgent(BaseAgent):
             q1_next, q2_next = self.target_critic(next_states, next_actions)
 
             # TODO check dim of rewards, dones, q1_next should be same - yes it should be and it is
-            q_target = rewards + (dones) * self.gamma * torch.min(q1_next, q2_next)
+            q_target = rewards + (1 - dones) * self.gamma * torch.min(q1_next, q2_next)
 
         # Compute current Q-values using the critic
         q1, q2 = self.critic(states, actions)

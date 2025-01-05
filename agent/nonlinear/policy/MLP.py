@@ -63,16 +63,6 @@ class DeterministicAction(nn.Module):
         # Initialize weights
         self.apply(lambda module: weights_init_(module, init, activation))
 
-        # action rescaling
-        if action_space is None:
-            self.action_scale = torch.tensor(1.)
-            self.action_bias = torch.tensor(0.)
-        else:
-            self.action_scale = torch.FloatTensor(
-                (action_space.high - action_space.low) / 2.)
-            self.action_bias = torch.FloatTensor(
-                (action_space.high + action_space.low) / 2.)
-
         if activation == "relu":
             self.act = F.relu
         elif activation == "tanh":
@@ -139,8 +129,8 @@ class DeterministicAction(nn.Module):
         nn.Module
             The current network, moved to a new device
         """
-        self.action_scale = self.action_scale.to(device)
-        self.action_bias = self.action_bias.to(device)
+        # self.action_scale = self.action_scale.to(device)
+        # self.action_bias = self.action_bias.to(device)
         return super(DeterministicAction, self).to(device)
 
 from scipy.optimize import minimize
