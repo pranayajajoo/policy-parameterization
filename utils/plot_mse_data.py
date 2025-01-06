@@ -24,7 +24,7 @@ type_map = {
 env = "Acrobot-v1"
 
 DATA_FILES = [
-    f"results/Acrobot-v1_epsgreedy_best_param/data.pkl",
+    f"results/results/jan5/eps-greedy-uniform-exploration-sweep/DenseAcrobot-v1_epsgreedy_DeterministicAction/data.pkl",
 ]
 
 
@@ -73,11 +73,11 @@ fig, ax = plot.mean_with_stderr(
     ax=ax,
 )
 
-ax.set_title(env)
+ax.set_title("Dense Acrobot")
 ax.legend()
 
 # create directory if it doesn't exist
 if not os.path.exists("./plots/png"):
     os.makedirs("./plots/png")
-fig.savefig(f"./plots/png/Acrobot-v1_epsgreedy_best_param_avg.png", bbox_inches="tight")
-print(f"Saved to ./plots/png/Acrobot-v1_epsgreedy_best_param_avg.png")
+fig.savefig(f"./plots/png/jan5/DenseAcrobot-v1_epsgreedy_DeterministicAction.png", bbox_inches="tight")
+print(f"Saved to ./plots/png/jan5/DenseAcrobot-v1_epsgreedy_DeterministicAction.png")
