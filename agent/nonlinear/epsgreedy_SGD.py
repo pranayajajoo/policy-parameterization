@@ -118,6 +118,8 @@ class EpsGreedyAgent(BaseAgent):
             action = torch.Tensor(self.env.action_space.sample())  # Random action
         else:
             action = torch.Tensor(self.get_potential_actions(states = state_tensor))  # Exploit
+            # print('sample_action passes')
+            # action = torch.Tensor(self.actor.get_action(state = state_tensor))
 
         return action.detach().cpu().numpy()[0]  # size (1, action_dims)
 
@@ -157,36 +159,99 @@ class EpsGreedyAgent(BaseAgent):
     ### TODO: WIP
     # Jiamin's optimizer suggestion
     def get_potential_actions(self, states, action_min=-1, action_max=1, num_starting_points=30, lr=0.01, num_gd_steps=100):
-        # initialize actions with equidistant start points
-        uniform_actions = [np.linspace(action_min, action_max, num_starting_points)]
-        actions = torch.FloatTensor(uniform_actions)
-        actions.requires_grad = True
+        """
+        Optimize actions for a batch of states using gradient descent.
+
+        Parameters
+        ----------
+        states : torch.Tensor
+            Batch of states with shape (batch_size, state_dim).
+        action_min : float
+            Minimum action value.
+        action_max : float
+            Maximum action value.
+        num_starting_points : int
+            Number of initial action points to start GD from.
+        lr : float
+            Learning rate for SGD.
+        num_gd_steps : int
+            Number of gradient descent steps.
+
+        Returns
+        -------
+        torch.Tensor
+            Optimized actions for each state in the batch, with shape (batch_size, action_dim).
+        """
+        batch_size, state_dim = states.shape
+        action_dim = self.env.action_space.shape[0]
+
+        # Initialize actions with equidistant start points
+        uniform_actions = torch.linspace(action_min, action_max, num_starting_points)  # Shape: (num_starting_points,)
+        uniform_actions = uniform_actions.repeat(batch_size, 1)  # Shape: (batch_size, num_starting_points)
+        uniform_actions = uniform_actions.unsqueeze(-1)  # Shape: (batch_size, num_starting_points, 1)
+        uniform_actions = uniform_actions.repeat(1, 1, action_dim)  # Shape: (batch_size, num_starting_points, action_dim)
+        uniform_actions.requires_grad = True
 
         # SGD optimizer
-        optimizer = torch.optim.SGD([actions], lr=lr)
-        loss_SGD = []
+        optimizer = torch.optim.SGD([uniform_actions], lr=lr)
 
-        # gradient descent
-        # check if we want to do fixed number of steps or to a thershold loss
+        #tracking last 5 actions ->
+        best_actions_history = []
+
+        # Gradient descent
         for step in range(num_gd_steps):
             optimizer.zero_grad()
 
+            # Reshape actions and states for batch processing
+            states_repeated = states.unsqueeze(1).repeat(1, num_starting_points, 1)  # Shape: (batch_size, num_starting_points, state_dim)
+            states_repeated = states_repeated.view(-1, state_dim)  # Shape: (batch_size * num_starting_points, state_dim)
+            actions_reshaped = uniform_actions.view(-1, action_dim)  # Shape: (batch_size * num_starting_points, action_dim)
+
             # Compute Q-values for current actions
-            q1, q2 = self.critic(states, actions)
-            q_min = min(q1, q2)
+            q1, q2 = self.critic(states_repeated, actions_reshaped)
+            q_min = torch.min(q1, q2)  # Shape: (batch_size * num_starting_points, 1)
 
             # Negative Q-value as loss (maximize Q-value)
             loss = -q_min.mean()
+            loss.requires_grad_(True)
+            # print(f"uniform_actions requires_grad: {uniform_actions.requires_grad}")
+            # print(f"actions_reshaped requires_grad: {actions_reshaped.requires_grad}")
+            # print(f"q1 requires_grad: {q1.requires_grad}")
+            # print(f"q2 requires_grad: {q2.requires_grad}")
+            # print(f"q_min requires_grad: {q_min.requires_grad}")
+            # print(f"loss requires_grad: {loss.requires_grad}")
             loss.backward()
-            loss_SGD.append(loss)
 
             # GD step
             optimizer.step()
 
+            # Clamp actions to valid range
             with torch.no_grad():
-                actions.clamp_(action_min, action_max)
+                uniform_actions.clamp_(action_min, action_max)
 
-        return actions.detach()
+            # Reshape Q-values to (batch_size, num_starting_points)
+            q_min = q_min.view(batch_size, num_starting_points)
+
+            # Select the action with the highest Q-value for each state
+            best_action_indices = torch.argmax(q_min, dim=1)  # Shape: (batch_size,)
+            best_actions = uniform_actions[torch.arange(batch_size), best_action_indices]  # Shape: (batch_size, action_dim)
+
+            best_actions_history.append(best_actions.detach().clone())
+            if len(best_actions_history) > 5:
+                best_actions_history.pop(0)
+
+            #check last 5 actions to see if they haev changed
+            if len(best_actions_history) == 5:
+                all_equal = True
+                for i in range(1, 5):
+                    if not torch.allclose(best_actions_history[i], best_actions_history[0], atol=1e-3):
+                        all_equal = False
+                        break
+                if all_equal:
+                    # print(f"Early stopping at step {step + 1} because the best actions have not changed for 5 steps.")
+                    break
+
+        return best_actions.detach()
 
     def update_critic(self, states, actions, rewards, next_states, dones):
         """
@@ -194,19 +259,24 @@ class EpsGreedyAgent(BaseAgent):
         """
         with torch.no_grad():
             # Compute next actions using the actor
-            next_actions = self.actor.get_action(next_states)
+            # print('FAIL!!!!')
+            next_actions = self.get_potential_actions(next_states)
+            # import ipdb;ipdb.set_trace()
+            # print('update critic: next action passes')
 
             # TESTING CRITIC EXPLORATION + EXPLOITATION
             # next_actions = self.batch_sample_action(next_states)
 
             # Compute target Q-values using target critic
             q1_next, q2_next = self.target_critic(next_states, next_actions)
+            # print('update critic: next action q passes')
 
             # TODO check dim of rewards, dones, q1_next should be same - yes it should be and it is
             q_target = rewards + (1 - dones) * self.gamma * torch.min(q1_next, q2_next)
 
         # Compute current Q-values using the critic
         q1, q2 = self.critic(states, actions)
+        # print('update critic: q1, q1 value calc passes')
 
         # storing q1 values for plotting and debugging
         q1_mean = q1.mean().item()

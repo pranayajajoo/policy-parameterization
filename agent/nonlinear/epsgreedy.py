@@ -121,6 +121,7 @@ class EpsGreedyAgent(BaseAgent):
         if self._is_training and np.random.rand() < self.epsilon:
             action = torch.Tensor(self.env.action_space.sample())  # Random action
         else:
+            # import ipdb; ipdb.set_trace()
             action = torch.Tensor(self.actor.get_action(state = state_tensor))  # Exploit
             
         # # TD3 testing - if we want to use TD3, uncomment the below
@@ -244,6 +245,7 @@ class EpsGreedyAgent(BaseAgent):
             q_target = rewards + (dones) * self.gamma * torch.min(q1_next, q2_next)
 
         # Compute current Q-values using the critic
+        import ipdb; ipdb.set_trace()
         q1, q2 = self.critic(states, actions)
 
         # storing q1 values for plotting and debugging

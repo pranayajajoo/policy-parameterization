@@ -47,11 +47,11 @@ export PYTHONPATH=${PWD}:$PYTHONPATH
 # python main.py --save-dir results/jan5/eps-greedy-uniform-exploration-sweep --agent-json config/agent/epsgreedy_classic_sweep.json --env-json config/environment/Acrobot-v1.json --index 19
 
 
-python main.py --save-dir results/jan5/eps-greedy-uniform-exploration-sweep --agent-json config/agent/epsgreedy_classic_sweep.json --env-json config/environment/Acrobot-v1_dense.json --index 20 &
-python main.py --save-dir results/jan5/eps-greedy-uniform-exploration-sweep --agent-json config/agent/epsgreedy_classic_sweep.json --env-json config/environment/Acrobot-v1_dense.json --index 21 &
-python main.py --save-dir results/jan5/eps-greedy-uniform-exploration-sweep --agent-json config/agent/epsgreedy_classic_sweep.json --env-json config/environment/Acrobot-v1_dense.json --index 22 &
-python main.py --save-dir results/jan5/eps-greedy-uniform-exploration-sweep --agent-json config/agent/epsgreedy_classic_sweep.json --env-json config/environment/Acrobot-v1_dense.json --index 23 &
-python main.py --save-dir results/jan5/eps-greedy-uniform-exploration-sweep --agent-json config/agent/epsgreedy_classic_sweep.json --env-json config/environment/Acrobot-v1_dense.json --index 24 
+python main.py --save-dir nn_optimizer/eps-greedy-best-hypers-woexploration --agent-json config/agent/epsgreedy_test_pendulum.json --env-json config/environment/Pendulum-v0.json --index 0 &
+python main.py --save-dir nn_optimizer/eps-greedy-best-hypers-woexploration --agent-json config/agent/epsgreedy_test_pendulum.json --env-json config/environment/Pendulum-v0.json --index 1 &
+python main.py --save-dir nn_optimizer/eps-greedy-best-hypers-woexploration --agent-json config/agent/epsgreedy_test_pendulum.json --env-json config/environment/Pendulum-v0.json --index 2 &
+python main.py --save-dir nn_optimizer/eps-greedy-best-hypers-woexploration --agent-json config/agent/epsgreedy_test_pendulum.json --env-json config/environment/Pendulum-v0.json --index 3 &
+python main.py --save-dir nn_optimizer/eps-greedy-best-hypers-woexploration --agent-json config/agent/epsgreedy_test_pendulum.json --env-json config/environment/Pendulum-v0.json --index 4 
 
 # python main.py --save-dir results/jan5/eps-greedy-uniform-exploration-sweep --agent-json config/agent/epsgreedy_classic_sweep.json --env-json config/environment/Acrobot-v1.json --index 25 &
 # python main.py --save-dir results/jan5/eps-greedy-uniform-exploration-sweep --agent-json config/agent/epsgreedy_classic_sweep.json --env-json config/environment/Acrobot-v1.json --index 26 &

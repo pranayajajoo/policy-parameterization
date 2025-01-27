@@ -248,35 +248,71 @@ class DoubleQ(nn.Module):
             self.act = torch.tanh
         else:
             raise ValueError(f"unknown activation {activation}")
-
+    
     def forward(self, state, action):
-        """
-        Performs the forward pass through each network, predicting two
-        action-values (from each action-value approximator) for the input
-        action in the input state.
+        # Debugging: Check if inputs require gradients
+        # print(f"state requires_grad: {state.requires_grad}")
+        # print(f"action requires_grad: {action.requires_grad}")
 
-        Parameters
-        ----------
-        state : torch.Tensor of float
-            The state that the action was taken in
-        action : torch.Tensor of float
-            The action taken in the input state to predict the value function
-            of
+        # Concatenate state and action
+        xu = torch.cat([state, action], dim=1)
+        # xu.requires_grad = True
+        # xu.requires_grad_(True)
+        # print(f"xu requires_grad: {xu.requires_grad}")
 
-        Returns
-        -------
-        2-tuple of torch.Tensor of float
-            A 2-tuple of action values, one predicted by each function
-            approximator
-        """
-        xu = torch.cat([state, action], 1)
-
+        # Forward pass through Q1
         x1 = self.act(self.linear1(xu))
-        x1 = self.act(self.linear2(x1))
-        x1 = self.linear3(x1)
+        # print(f"x1 requires_grad: {x1.requires_grad}")
 
+        x1 = self.act(self.linear2(x1))
+        # print(f"x1 after linear2 requires_grad: {x1.requires_grad}")
+
+        x1 = self.linear3(x1)
+        # print(f"x1 after linear3 requires_grad: {x1.requires_grad}")
+
+        # Forward pass through Q2
         x2 = self.act(self.linear4(xu))
+        # print(f"x2 requires_grad: {x2.requires_grad}")
+
         x2 = self.act(self.linear5(x2))
+        # print(f"x2 after linear5 requires_grad: {x2.requires_grad}")
+
         x2 = self.linear6(x2)
+        # print(f"x2 after linear6 requires_grad: {x2.requires_grad}")
 
         return x1, x2
+
+    # def forward(self, state, action):
+    #     """
+    #     Performs the forward pass through each network, predicting two
+    #     action-values (from each action-value approximator) for the input
+    #     action in the input state.
+
+    #     Parameters
+    #     ----------
+    #     state : torch.Tensor of float
+    #         The state that the action was taken in
+    #     action : torch.Tensor of float
+    #         The action taken in the input state to predict the value function
+    #         of
+
+    #     Returns
+    #     -------
+    #     2-tuple of torch.Tensor of float
+    #         A 2-tuple of action values, one predicted by each function
+    #         approximator
+    #     """
+    #     # import ipdb; ipdb.set_trace()
+    #     xu = torch.cat([state, action], dim = 1)
+    #     # import ipdb; ipdb.set_trace()
+    #     xu.requires_grad(True)
+
+    #     x1 = self.act(self.linear1(xu))
+    #     x1 = self.act(self.linear2(x1))
+    #     x1 = self.linear3(x1)
+
+    #     x2 = self.act(self.linear4(xu))
+    #     x2 = self.act(self.linear5(x2))
+    #     x2 = self.linear6(x2)
+
+    #     return x1, x2

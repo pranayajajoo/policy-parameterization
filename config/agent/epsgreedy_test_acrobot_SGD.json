@@ -1,5 +1,5 @@
 {
-    "agent_name": "epsgreedy",
+    "agent_name": "epsgreedy_SGD",
     "parameters":
     {
         "clip_actions": [true],

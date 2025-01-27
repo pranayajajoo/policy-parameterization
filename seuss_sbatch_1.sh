@@ -28,11 +28,11 @@ export PYTHONPATH=${PWD}:$PYTHONPATH
 # python main.py --save-dir results/jan5/eps-greedy-uniform-exploration-sweep --agent-json config/agent/epsgreedy_classic_sweep.json --env-json config/environment/Acrobot-v1_dense.json --index 3 &
 # python main.py --save-dir results/jan5/eps-greedy-uniform-exploration-sweep --agent-json config/agent/epsgreedy_classic_sweep.json --env-json config/environment/Acrobot-v1_dense.json --index 4 
 
-python main.py --save-dir results/jan5/eps-greedy-best-hypers-wexploration --agent-json config/agent/epsgreedy_best_acrobot.json --env-json config/environment/Acrobot-v1.json --index 5 &
-python main.py --save-dir results/jan5/eps-greedy-best-hypers-wexploration --agent-json config/agent/epsgreedy_best_acrobot.json --env-json config/environment/Acrobot-v1.json --index 6 &
-python main.py --save-dir results/jan5/eps-greedy-best-hypers-wexploration --agent-json config/agent/epsgreedy_best_acrobot.json --env-json config/environment/Acrobot-v1.json --index 7 &
-python main.py --save-dir results/jan5/eps-greedy-best-hypers-wexploration --agent-json config/agent/epsgreedy_best_acrobot.json --env-json config/environment/Acrobot-v1.json --index 8 &
-python main.py --save-dir results/jan5/eps-greedy-best-hypers-wexploration --agent-json config/agent/epsgreedy_best_acrobot.json --env-json config/environment/Acrobot-v1.json --index 9
+python main.py --save-dir nn_optimizer/eps-greedy-best-hypers-woexploration --agent-json config/agent/epsgreedy_best_acrobot.json --env-json config/environment/Acrobot-v1.json --index 5 &
+# python main.py --save-dir nn_optimizer/eps-greedy-best-hypers-woexploration --agent-json config/agent/epsgreedy_best_acrobot.json --env-json config/environment/Acrobot-v1.json --index 6 &
+# python main.py --save-dir nn_optimizer/eps-greedy-best-hypers-woexploration --agent-json config/agent/epsgreedy_best_acrobot.json --env-json config/environment/Acrobot-v1.json --index 7 &
+python main.py --save-dir nn_optimizer/eps-greedy-best-hypers-woexploration --agent-json config/agent/epsgreedy_best_acrobot.json --env-json config/environment/Acrobot-v1.json --index 8 &
+# python main.py --save-dir nn_optimizer/eps-greedy-best-hypers-woexploration --agent-json config/agent/epsgreedy_best_acrobot.json --env-json config/environment/Acrobot-v1.json --index 9
 
 # python main.py --save-dir results/jan5/eps-greedy-uniform-exploration-sweep --agent-json config/agent/epsgreedy_classic_sweep.json --env-json config/environment/Acrobot-v1_dense.json --index 10 &
 # python main.py --save-dir results/jan5/eps-greedy-uniform-exploration-sweep --agent-json config/agent/epsgreedy_classic_sweep.json --env-json config/environment/Acrobot-v1_dense.json --index 11 &
