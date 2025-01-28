@@ -11,7 +11,7 @@
 
 
 source ~/.bashrc 
-cd /home/pranayaj/scratch/work/policy-params
+cd /home/pranayaj/projects/def-whitem/pranayaj/scratch/work/policy-parameterization
 user_id="pranayaj"
 
 module load StdEnv/2020

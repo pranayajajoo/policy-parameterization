@@ -186,10 +186,10 @@ class EpsGreedyAgent(BaseAgent):
         action_dim = self.env.action_space.shape[0]
 
         # Initialize actions with equidistant start points
-        uniform_actions = torch.linspace(action_min, action_max, num_starting_points)  # Shape: (num_starting_points,)
-        uniform_actions = uniform_actions.repeat(batch_size, 1)  # Shape: (batch_size, num_starting_points)
-        uniform_actions = uniform_actions.unsqueeze(-1)  # Shape: (batch_size, num_starting_points, 1)
-        uniform_actions = uniform_actions.repeat(1, 1, action_dim)  # Shape: (batch_size, num_starting_points, action_dim)
+        uniform_actions = torch.linspace(action_min, action_max, num_starting_points).to(self.device)  # Shape: (num_starting_points,)
+        uniform_actions = uniform_actions.repeat(batch_size, 1)
+        uniform_actions = uniform_actions.unsqueeze(-1)
+        uniform_actions = uniform_actions.repeat(1, 1, action_dim)
         uniform_actions.requires_grad = True
 
         # SGD optimizer
@@ -201,17 +201,21 @@ class EpsGreedyAgent(BaseAgent):
         # Gradient descent
         for step in range(num_gd_steps):
             optimizer.zero_grad()
+            # print(f"uniform_actions device: {uniform_actions.device}")
 
             # Reshape actions and states for batch processing
-            states_repeated = states.unsqueeze(1).repeat(1, num_starting_points, 1)  # Shape: (batch_size, num_starting_points, state_dim)
-            states_repeated = states_repeated.view(-1, state_dim)  # Shape: (batch_size * num_starting_points, state_dim)
-            actions_reshaped = uniform_actions.view(-1, action_dim)  # Shape: (batch_size * num_starting_points, action_dim)
+            states_repeated = states.unsqueeze(1).repeat(1, num_starting_points, 1)
+            states_repeated = states_repeated.view(-1, state_dim)
+            actions_reshaped = uniform_actions.view(-1, action_dim)
+            # print(f"states_repeated device: {states_repeated.device}")
+            # print(f"actions_reshaped device: {actions_reshaped.device}")
 
-            # Compute Q-values for current actions
+
+
+            # q-vals for current actions
             q1, q2 = self.critic(states_repeated, actions_reshaped)
-            q_min = torch.min(q1, q2)  # Shape: (batch_size * num_starting_points, 1)
+            q_min = torch.min(q1, q2)
 
-            # Negative Q-value as loss (maximize Q-value)
             loss = -q_min.mean()
             loss.requires_grad_(True)
             # print(f"uniform_actions requires_grad: {uniform_actions.requires_grad}")
@@ -233,7 +237,8 @@ class EpsGreedyAgent(BaseAgent):
             q_min = q_min.view(batch_size, num_starting_points)
 
             # Select the action with the highest Q-value for each state
-            best_action_indices = torch.argmax(q_min, dim=1)  # Shape: (batch_size,)
+            best_action_indices = torch.argmax(q_min, dim=1) 
+            # print(f"best_action_indices device: {best_action_indices.device}")
             best_actions = uniform_actions[torch.arange(batch_size), best_action_indices]  # Shape: (batch_size, action_dim)
 
             best_actions_history.append(best_actions.detach().clone())

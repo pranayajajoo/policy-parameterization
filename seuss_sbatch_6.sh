@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --time=4:00:00
+#SBATCH --time=04:0:00
 #SBATCH --output=/home/pranayaj/scratch/slurm_trash/%x-%j.out
 #SBATCH --mem=4G
 #SBATCH --gres=gpu:1
@@ -11,7 +11,7 @@
 
 
 source ~/.bashrc 
-cd /home/pranayaj/scratch/work/policy-params
+cd /home/pranayaj/projects/def-whitem/pranayaj/scratch/work/policy-parameterization
 user_id="pranayaj"
 
 module load StdEnv/2020
@@ -61,11 +61,11 @@ export PYTHONPATH=${PWD}:$PYTHONPATH
 
 
 # python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1.json --index 1
-# python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1.json --index 0 &
-# python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1.json --index 1 &
-python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1.json --index 2 &
-python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1.json --index 3 &
-python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1.json --index 4 
+# python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1_dense.json --index 0 &
+# python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1_dense.json --index 1 &
+# python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1_dense.json --index 2 &
+python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1_dense.json --index 3 &
+python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1_dense.json --index 4 
 
 # python main.py --save-dir results/jan5/eps-greedy-uniform-exploration-sweep --agent-json config/agent/epsgreedy_classic_sweep.json --env-json config/environment/Acrobot-v1.json --index 35 &
 # python main.py --save-dir results/jan5/eps-greedy-uniform-exploration-sweep --agent-json config/agent/epsgreedy_classic_sweep.json --env-json config/environment/Acrobot-v1.json --index 36 &

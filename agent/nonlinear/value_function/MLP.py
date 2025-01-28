@@ -250,17 +250,33 @@ class DoubleQ(nn.Module):
             raise ValueError(f"unknown activation {activation}")
     
     def forward(self, state, action):
-        # Debugging: Check if inputs require gradients
+        """
+        Performs the forward pass through each network, predicting two
+        action-values (from each action-value approximator) for the input
+        action in the input state.
+
+        Parameters
+        ----------
+        state : torch.Tensor of float
+            The state that the action was taken in
+        action : torch.Tensor of float
+            The action taken in the input state to predict the value function
+            of
+
+        Returns
+        -------
+        2-tuple of torch.Tensor of float
+            A 2-tuple of action values, one predicted by each function
+            approximator
+        """
+        # Debugger
         # print(f"state requires_grad: {state.requires_grad}")
         # print(f"action requires_grad: {action.requires_grad}")
 
-        # Concatenate state and action
         xu = torch.cat([state, action], dim=1)
-        # xu.requires_grad = True
         # xu.requires_grad_(True)
         # print(f"xu requires_grad: {xu.requires_grad}")
 
-        # Forward pass through Q1
         x1 = self.act(self.linear1(xu))
         # print(f"x1 requires_grad: {x1.requires_grad}")
 
@@ -270,7 +286,6 @@ class DoubleQ(nn.Module):
         x1 = self.linear3(x1)
         # print(f"x1 after linear3 requires_grad: {x1.requires_grad}")
 
-        # Forward pass through Q2
         x2 = self.act(self.linear4(xu))
         # print(f"x2 requires_grad: {x2.requires_grad}")
 
