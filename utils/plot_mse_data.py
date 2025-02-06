@@ -24,7 +24,7 @@ type_map = {
 env = "Acrobot-v1"
 
 DATA_FILES = [
-    f"results/SGD_optimizer/Acrobot-v1_epsgreedy_SGD_DeterministicAction/data.pkl",
+    f"results/results/SAC/Acrobot-v1_SAC_SquashedGaussian/data.pkl",
 ]
 
 
@@ -46,7 +46,7 @@ for agent in DATA:
 
 # Generate plot labels
 labels = [
-    "eps greedy",
+    "SAC",
 ]
 
 CMAP = "tab10"
@@ -74,11 +74,11 @@ fig, ax = plot.mean_with_stderr(
     ax=ax,
 )
 
-ax.set_title("Acrobot-v1 (no initial exploration)")
+ax.set_title("Acrobot-v1")
 ax.legend()
 
 # create directory if it doesn't exist
-if not os.path.exists("./plots/png"):
-    os.makedirs("./plots/png")
-fig.savefig(f"./plots/SGD_actor/Acrobot-v1_epsgreedy_DeterministicAction_woexploration.png", bbox_inches="tight")
-print(f"Saved to ./plots/SGD_actor/Pendulum-v0_epsgreedy_DeterministicAction_woexploration.png")
+if not os.path.exists("./plots/post_term_change/SGD_actor"):
+    os.makedirs("./plots/post_term_change/SGD_actor")
+fig.savefig(f"./plots/SAC/Acrobot-v1_SAC_SquashedGaussian.png", bbox_inches="tight")
+print(f"Saved to ./plots/post_term_change/SGD_actor/Pendulum-v0_epsgreedy_DeterministicAction_woexploration.png")

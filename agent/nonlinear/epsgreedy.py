@@ -245,7 +245,7 @@ class EpsGreedyAgent(BaseAgent):
             q_target = rewards + (dones) * self.gamma * torch.min(q1_next, q2_next)
 
         # Compute current Q-values using the critic
-        import ipdb; ipdb.set_trace()
+        # import ipdb; ipdb.set_trace()
         q1, q2 = self.critic(states, actions)
 
         # storing q1 values for plotting and debugging

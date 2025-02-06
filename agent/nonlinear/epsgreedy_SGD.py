@@ -65,6 +65,7 @@ class EpsGreedyAgent(BaseAgent):
         actor_lr = actor_lr_scale * critic_lr
         self._steps_before_learning = steps_before_learning
         self.max_action = float(self.env.action_space.high[0])
+        import ipdb; ipdb.set_trace()
 
 
         # Initialize networks
@@ -159,34 +160,13 @@ class EpsGreedyAgent(BaseAgent):
     ### TODO: WIP
     # Jiamin's optimizer suggestion
     def get_potential_actions(self, states, action_min=-1, action_max=1, num_starting_points=30, lr=0.01, num_gd_steps=100):
-        """
-        Optimize actions for a batch of states using gradient descent.
-
-        Parameters
-        ----------
-        states : torch.Tensor
-            Batch of states with shape (batch_size, state_dim).
-        action_min : float
-            Minimum action value.
-        action_max : float
-            Maximum action value.
-        num_starting_points : int
-            Number of initial action points to start GD from.
-        lr : float
-            Learning rate for SGD.
-        num_gd_steps : int
-            Number of gradient descent steps.
-
-        Returns
-        -------
-        torch.Tensor
-            Optimized actions for each state in the batch, with shape (batch_size, action_dim).
-        """
+        action_max = float(self.env.action_space.high[0])
+        action_min = float(self.env.action_space.low[0])
         batch_size, state_dim = states.shape
         action_dim = self.env.action_space.shape[0]
 
         # Initialize actions with equidistant start points
-        uniform_actions = torch.linspace(action_min, action_max, num_starting_points).to(self.device)  # Shape: (num_starting_points,)
+        uniform_actions = torch.linspace(action_min, action_max, num_starting_points).to(self.device)
         uniform_actions = uniform_actions.repeat(batch_size, 1)
         uniform_actions = uniform_actions.unsqueeze(-1)
         uniform_actions = uniform_actions.repeat(1, 1, action_dim)
@@ -195,15 +175,15 @@ class EpsGreedyAgent(BaseAgent):
         # SGD optimizer
         optimizer = torch.optim.SGD([uniform_actions], lr=lr)
 
-        #tracking last 5 actions ->
+        # tracking last 5 actions ->
         best_actions_history = []
 
-        # Gradient descent
+        # GD
         for step in range(num_gd_steps):
             optimizer.zero_grad()
             # print(f"uniform_actions device: {uniform_actions.device}")
 
-            # Reshape actions and states for batch processing
+            # reshaping for batch processing (batch_size = 1 or 32)
             states_repeated = states.unsqueeze(1).repeat(1, num_starting_points, 1)
             states_repeated = states_repeated.view(-1, state_dim)
             actions_reshaped = uniform_actions.view(-1, action_dim)
@@ -229,17 +209,14 @@ class EpsGreedyAgent(BaseAgent):
             # GD step
             optimizer.step()
 
-            # Clamp actions to valid range
+            # clamp actions to range
             with torch.no_grad():
                 uniform_actions.clamp_(action_min, action_max)
 
-            # Reshape Q-values to (batch_size, num_starting_points)
             q_min = q_min.view(batch_size, num_starting_points)
-
-            # Select the action with the highest Q-value for each state
             best_action_indices = torch.argmax(q_min, dim=1) 
             # print(f"best_action_indices device: {best_action_indices.device}")
-            best_actions = uniform_actions[torch.arange(batch_size), best_action_indices]  # Shape: (batch_size, action_dim)
+            best_actions = uniform_actions[torch.arange(batch_size), best_action_indices]  # shape: (batch_size, action_dim)
 
             best_actions_history.append(best_actions.detach().clone())
             if len(best_actions_history) > 5:
@@ -263,23 +240,19 @@ class EpsGreedyAgent(BaseAgent):
         Update the DoubleQ critic using the Bellman equation.
         """
         with torch.no_grad():
-            # Compute next actions using the actor
             # print('FAIL!!!!')
             next_actions = self.get_potential_actions(next_states)
             # import ipdb;ipdb.set_trace()
             # print('update critic: next action passes')
-
-            # TESTING CRITIC EXPLORATION + EXPLOITATION
-            # next_actions = self.batch_sample_action(next_states)
 
             # Compute target Q-values using target critic
             q1_next, q2_next = self.target_critic(next_states, next_actions)
             # print('update critic: next action q passes')
 
             # TODO check dim of rewards, dones, q1_next should be same - yes it should be and it is
-            q_target = rewards + (1 - dones) * self.gamma * torch.min(q1_next, q2_next)
+            q_target = rewards + (dones) * self.gamma * torch.min(q1_next, q2_next)
 
-        # Compute current Q-values using the critic
+        # current Q vals using the critic
         q1, q2 = self.critic(states, actions)
         # print('update critic: q1, q1 value calc passes')
 
@@ -287,7 +260,7 @@ class EpsGreedyAgent(BaseAgent):
         q1_mean = q1.mean().item()
         self.q1_mean_per_episode.append(q1_mean)
 
-        # Compute critic loss
+        # critic loss
         critic_loss = F.mse_loss(q1, q_target) + F.mse_loss(q2, q_target)
 
         # Update critic networks

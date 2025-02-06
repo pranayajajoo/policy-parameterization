@@ -265,9 +265,12 @@ class Experiment:
             else:
                 if episode_steps <= self.env.steps_per_episode and done and \
                         not info["steps_exceeded"]:
+                    print('episode term')
+                    # import ipdb;ipdb.set_trace()
                     done_mask = 0
                 else:
                     done_mask = 1
+            # import ipdb;ipdb.set_trace()
 
             # Update agent
             self.agent.update(state, action, reward, next_state, done_mask)

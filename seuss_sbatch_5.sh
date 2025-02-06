@@ -55,11 +55,15 @@ export PYTHONPATH=${PWD}:$PYTHONPATH
 
 # python main.py --save-dir nn_optimizer/eps-greedy-best-hypers-woexploration --agent-json config/agent/epsgreedy_test_pendulum.json --env-json config/environment/Pendulum-v0.json --index 6 &
 # python main.py --save-dir nn_optimizer/eps-greedy-best-hypers-woexploration --agent-json config/agent/epsgreedy_test_pendulum.json --env-json config/environment/Pendulum-v0.json --index 7 &
-python main.py --save-dir nn_optimizer/eps-greedy-best-hypers-woexploration --agent-json config/agent/epsgreedy_test_pendulum.json --env-json config/environment/Pendulum-v0.json --index 5 &
+# python main.py --save-dir nn_optimizer/eps-greedy-best-hypers-woexploration --agent-json config/agent/epsgreedy_test_pendulum.json --env-json config/environment/Pendulum-v0.json --index 5 &
 # python main.py --save-dir nn_optimizer/eps-greedy-best-hypers-woexploration --agent-json config/agent/epsgreedy_test_pendulum.json --env-json config/environment/Pendulum-v0.json --index 8 &
-python main.py --save-dir nn_optimizer/eps-greedy-best-hypers-woexploration --agent-json config/agent/epsgreedy_test_pendulum.json --env-json config/environment/Pendulum-v0.json --index 9
+# python main.py --save-dir nn_optimizer/eps-greedy-best-hypers-woexploration --agent-json config/agent/epsgreedy_test_pendulum.json --env-json config/environment/Pendulum-v0.json --index 9
 
-
+# python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1_dense.json --index 0 &
+# python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1_dense.json --index 1 &
+python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1_dense.json --index 2 &
+python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1_dense.json --index 3 &
+# python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1_dense.json --index 4 
 
 # python main.py --save-dir results/jan5/eps-greedy-uniform-exploration-sweep --agent-json config/agent/epsgreedy_classic_sweep.json --env-json config/environment/Acrobot-v1.json --index 30 &
 # python main.py --save-dir results/jan5/eps-greedy-uniform-exploration-sweep --agent-json config/agent/epsgreedy_classic_sweep.json --env-json config/environment/Acrobot-v1.json --index 31 &

@@ -1944,6 +1944,7 @@ def _plot_mean_with_stderr_episodic(data, type_, ind, smooth_over, fig=None,
         # data = exp.reduce_episodes(data, ind[i], type_=type_)
         if type_ == "train":
             data = runs.expand_episodes(data, ind[i], type_=type_, skip=skip)
+            # import ipdb; ipdb.set_trace()
 
         # data has consistent # of episodes, so treat as env_type="continuing"
         _, mean, std = exp.get_mean_err(data, type_, ind[i], smooth_over,

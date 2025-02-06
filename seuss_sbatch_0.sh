@@ -22,11 +22,11 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/$user_id/Downloads/mujoco210/bin:/
 export PYTHONPATH=${PWD}:$PYTHONPATH
 
 
-# python main.py --save-dir results/nn_optimizer/eps-greedy-best-hypers-woexploration --agent-json config/agent/epsgreedy_best_acrobot.json --env-json config/environment/Acrobot-v1.json --index 0 &
-python main.py --save-dir results/nn_optimizer/eps-greedy-best-hypers-woexploration --agent-json config/agent/epsgreedy_best_acrobot.json --env-json config/environment/Acrobot-v1.json --index 1 &
-# python main.py --save-dir results/nn_optimizer/eps-greedy-best-hypers-woexploration --agent-json config/agent/epsgreedy_best_acrobot.json --env-json config/environment/Acrobot-v1.json --index 2 &
-python main.py --save-dir results/nn_optimizer/eps-greedy-best-hypers-woexploration --agent-json config/agent/epsgreedy_best_acrobot.json --env-json config/environment/Acrobot-v1.json --index 3
-# python main.py --save-dir results/nn_optimizer/eps-greedy-best-hypers-woexploration --agent-json config/agent/epsgreedy_best_acrobot.json --env-json config/environment/Acrobot-v1.json --index 4 
+# python main.py --save-dir results/SAC --agent-json config/agent/SAC_classic_best_acrobot.json --env-json config/environment/Acrobot-v1.json --index 0 &
+# python main.py --save-dir results/SAC --agent-json config/agent/SAC_classic_best_acrobot.json --env-json config/environment/Acrobot-v1.json --index 1 &
+# python main.py --save-dir results/SAC --agent-json config/agent/SAC_classic_best_acrobot.json --env-json config/environment/Acrobot-v1.json --index 2 &
+python main.py --save-dir results/SAC --agent-json config/agent/SAC_classic_best_acrobot.json --env-json config/environment/Acrobot-v1.json --index 3 &
+python main.py --save-dir results/SAC --agent-json config/agent/SAC_classic_best_acrobot.json --env-json config/environment/Acrobot-v1.json --index 4 
 
 # python main.py --save-dir results/jan5/eps-greedy-uniform-exploration-sweep --agent-json config/agent/epsgreedy_classic_sweep.json --env-json config/environment/Acrobot-v1_dense.json --index 5 &
 # python main.py --save-dir results/jan5/eps-greedy-uniform-exploration-sweep --agent-json config/agent/epsgreedy_classic_sweep.json --env-json config/environment/Acrobot-v1_dense.json --index 6 &

@@ -64,8 +64,14 @@ export PYTHONPATH=${PWD}:$PYTHONPATH
 # python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1_dense.json --index 0 &
 # python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1_dense.json --index 1 &
 # python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1_dense.json --index 2 &
-python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1_dense.json --index 3 &
-python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1_dense.json --index 4 
+# python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1_dense.json --index 3 &
+# python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1_dense.json --index 4 
+
+# python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1.json --index 6 &
+# python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1.json --index 7 &
+# python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1.json --index 8 &
+python main.py --save-dir SGD_optimizer --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1.json --index 9 &
+python main.py --save-dir test --agent-json config/agent/epsgreedy_test_acrobot_SGD.json --env-json config/environment/Acrobot-v1.json --index 0
 
 # python main.py --save-dir results/jan5/eps-greedy-uniform-exploration-sweep --agent-json config/agent/epsgreedy_classic_sweep.json --env-json config/environment/Acrobot-v1.json --index 35 &
 # python main.py --save-dir results/jan5/eps-greedy-uniform-exploration-sweep --agent-json config/agent/epsgreedy_classic_sweep.json --env-json config/environment/Acrobot-v1.json --index 36 &
